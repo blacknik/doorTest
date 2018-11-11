@@ -4,8 +4,11 @@ import Pages.HomePage;
 import Pages.SearchResultPage;
 import org.apache.log4j.Logger;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -22,7 +25,10 @@ public class Tests {
 
     @BeforeTest
     public void setUp() {
-        chrome = new ChromeDriver();
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--start-maximized");
+        chrome = new ChromeDriver(chromeOptions);
+
         homePage = new HomePage(chrome);
         searchResultPage = new SearchResultPage(chrome);
     }
@@ -38,14 +44,17 @@ public class Tests {
         }
         for (String error: errors){logger.error(error); }
     }
-
     @Test()
-    public void test_1_2(){
-        homePage.navigateToHomePage();
+    public void test_1_2() throws InterruptedException {
+        homePage.checkAllTabs();
+    }
+    @Test()
+    public void test_1_3(){
         String[] searchRequests = homePage.getListColors();
         homePage.search(searchRequests[0]);
         searchResultPage.checkDefValueResultsPerPage();
     }
+
 
 
 

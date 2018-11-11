@@ -3,6 +3,7 @@ package Pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 
 public class HomePage extends BaseModule {
     public HomePage(ChromeDriver driver) {
@@ -12,6 +13,9 @@ public class HomePage extends BaseModule {
     By searchField = By.xpath("(//input[@id=\"search\"])[1]");
     By searchButton = By.xpath("(//button[@type=\"submit\"])[1]");
     By listColors = By.xpath(".//li[@class=\"m-color__item\"]//a//span");
+    By menus = By.xpath("//ul[@id=\"nav\"]//li[contains(@class, \"level\")]");
+
+// (//ul[@id="nav"]//li[contains(@class, "level")])[1]//div[contains(@style," display: none;")]
 
 
     public void navigateToHomePage(){
@@ -38,4 +42,31 @@ public class HomePage extends BaseModule {
         return list;
     }
 
+    public void navigateMouseToElement(WebElement element){
+
+        Actions actions = new Actions(driver);
+        actions.moveToElement(element).build().perform();
+    }
+
+    public void checkAllTabs() throws InterruptedException {
+        logger.info("Начинаем проверку всех вкладок меню");
+        int count = elements(menus).size();
+        logger.info("Всего вкладок "+count);
+        for (int i=1;i<=count;i++){
+            int status;
+            String name = element(By.xpath("((//ul[@id=\"nav\"]//li[contains(@class, \"level\")])["+i+"]//span)[1]")).getText();
+            logger.info("Наводим курсор на вкладку "+name);
+            navigateMouseToElement(element(By.xpath("(//ul[@id=\"nav\"]//li[contains(@class, \"level\")])["+i+"]")));
+            Thread.sleep(500);
+            if (name.equals("Interior Doors")||name.equals("Hardware")||name.equals("Sale")||name.equals("Help")) {
+                logger.info("Проверяем что вкладка "+name+" раскрывается");
+                status = elements(By.xpath("(//ul[@id=\"nav\"]//li[contains(@class, \"level\")])[" + i + "]//div[contains(@style,\" display: block;\")]")).size();
+                assert (status == 0);
+            }else {
+                logger.info("Проверяем что вкладка "+name+" не раскрывается");
+                status = elements(By.xpath("(//ul[@id=\"nav\"]//li[contains(@class, \"level\")])[" + i + "]//div[contains(@style,\" display: none;\")]")).size();
+                assert(status == 0);
+            }
+        }
+    }
 }
